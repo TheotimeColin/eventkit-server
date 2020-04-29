@@ -21,7 +21,7 @@ app.use(morgan('combined'))
 app.use(bodyParser.json())
 app.use(cors())
 
-mongoose.connect('mongodb://localhost:27017')
+mongoose.connect(process.env.MONGO)
 
 const s3 = new AWS.S3({
     accessKeyId: process.env.S3_ID,
