@@ -47,7 +47,7 @@ mongoose.connection.once('open', () => {
     app.post('/articles', articlesPost)
     app.delete('/articles', articlesDelete)
 
-    app.post('/files', upload.array('images', 5), filesPost)
+    app.post('/files', upload.array('files', 5), filesPost)
     app.get('/files', filesGet)
 })
 

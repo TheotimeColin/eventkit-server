@@ -9,6 +9,7 @@ const ArticleSchema = new mongoose.Schema({
     excerpt: { type: String },
     content: { type: String },
     cover: { type: String },
+    thumbnail: { type: String },
     readTime: { type: Number, default: 5 }
 })
 
