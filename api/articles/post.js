@@ -16,11 +16,14 @@ module.exports = async function (req, res) {
             article = await Article.findOneAndUpdate({ id }, {
                 ...req.body
             })
+
+            article = await Article.findOne({ id })
         } else {
             article = await Article.create({
                 ...req.body
             })
         }
+
 
         if (!article) throw new Error()
     } catch (err) {

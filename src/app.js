@@ -11,6 +11,7 @@ const AWS = require('aws-sdk')
 
 const articlesGet = require('../api/articles/get')
 const articlesPost = require('../api/articles/post')
+const articlesDelete = require('../api/articles/delete')
 
 const filesGet = require('../api/files/get')
 const filesPost = require('../api/files/post')
@@ -44,6 +45,7 @@ mongoose.connection.on('error', console.error.bind(console, 'connection error:')
 mongoose.connection.once('open', () => {
     app.get('/articles', articlesGet)
     app.post('/articles', articlesPost)
+    app.delete('/articles', articlesDelete)
 
     app.post('/files', upload.array('images', 5), filesPost)
     app.get('/files', filesGet)
