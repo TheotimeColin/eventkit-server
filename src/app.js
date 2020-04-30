@@ -8,6 +8,7 @@ const MongoClient = require('mongodb').MongoClient
 const mongoose = require('mongoose')
 const multer  = require('multer');
 const AWS = require('aws-sdk')
+const AutoIncrementFactory = require('mongoose-sequence');
 
 const articlesGet = require('../api/articles/get')
 const articlesPost = require('../api/articles/post')
@@ -15,6 +16,10 @@ const articlesDelete = require('../api/articles/delete')
 
 const filesGet = require('../api/files/get')
 const filesPost = require('../api/files/post')
+
+const userPost = require('../api/user/post')
+const userGet = require('../api/user/get')
+const userLogout = require('../api/user/logout')
 
 const app = express()
 
@@ -39,6 +44,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 app.locals.s3 = s3
+app.locals.increment = AutoIncrementFactory(mongoose.connection)
 
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
 
@@ -46,6 +52,10 @@ mongoose.connection.once('open', () => {
     app.get('/articles', articlesGet)
     app.post('/articles', articlesPost)
     app.delete('/articles', articlesDelete)
+
+    app.post('/user', userPost)
+    app.get('/user', userGet)
+    app.post('/logout', userLogout)
 
     app.post('/files', upload.array('files', 5), filesPost)
     app.get('/files', filesGet)
