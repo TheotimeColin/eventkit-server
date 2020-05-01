@@ -1,27 +1,23 @@
 const mongoose = require('mongoose')
-const Article = require('../../entities/article')
+const ArticleCategory = require('../../../entities/article-category')
 
 module.exports = async function (req, res) {
     let errors = []
-    let articles = []
+    let categories = []
 
     let search = {}
 
-    if (req.query.slug) search.slug = req.query.slug
+    if (req.query.title) search.title = req.query.title
     if (req.query.id) search.id = req.query.id
 
     try {
-        articles = await Article.find(search).populate('category')
-
-        if (req.query.hitCount) {
-            await Article.findOneAndUpdate(search, { $inc: { hitCount: 1 } })
-        }
+        categories = await ArticleCategory.find(search).populate('articles', 'id')
     } catch (err) {
         errors.push({ code: err.code, message: err.errmsg })
     }
-    
+
     res.send({
-        articles,
+        categories,
         status: errors.length > 0 ? 0 : 1,
         errors
     }) 

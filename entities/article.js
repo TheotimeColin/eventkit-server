@@ -15,8 +15,9 @@ const ArticleSchema = new mongoose.Schema({
     publishedDate: { type: Date },
     modifiedDate: { type: Date },
 
-    hitsNumber: { type: Number, default: 0 },
-    readTime: { type: Number, default: 5 }
+    hitCount: { type: Number, default: 0 },
+    readTime: { type: Number, default: 5 },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: 'ArticleCategory' }
 })
 
 ArticleSchema.pre('save', function(next) {
@@ -26,16 +27,6 @@ ArticleSchema.pre('save', function(next) {
     next()
 })
 
-ArticleSchema.pre('findOneAndUpdate', function(next) {
-    const data = this.getUpdate()
-
-    data.publishedDate = data.publishedDate ? data.publishedDate : new Date()
-    data.modifiedDate = new Date()
-    this.update({}, data).exec()
-
-    next()
-})
-
-ArticleSchema.plugin(AutoIncrement, { inc_field: 'id', start_seq: 1000 })
+ArticleSchema.plugin(AutoIncrement, { id: 'article', inc_field: 'id', start_seq: 1000 })
 
 module.exports = mongoose.model('Article', ArticleSchema);
