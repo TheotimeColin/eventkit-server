@@ -11,7 +11,7 @@ module.exports = async function (req, res) {
     if (req.query.id) search.id = req.query.id
 
     try {
-        articles = await Article.find(search).populate('category')
+        articles = await Article.find(search).populate('category', '-articles').sort({ publishedDate: 'asc' })
 
         if (req.query.hitCount) {
             await Article.findOneAndUpdate(search, { $inc: { hitCount: 1 } })
