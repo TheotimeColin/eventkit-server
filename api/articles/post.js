@@ -15,7 +15,7 @@ module.exports = async function (req, res) {
         let exists = await Article.findOne({ id })
         
         if (exists) {
-            if (exists.category._id != req.body.categoryId) {
+            if (exists.category && exists.category._id != req.body.categoryId) {
                 let oldCategory = await ArticleCategory.findById(exists.category._id)
                 oldCategory.articles = oldCategory.articles.filter(article => !article._id.equals(exists._id))
                 await oldCategory.save()

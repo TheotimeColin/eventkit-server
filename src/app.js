@@ -15,6 +15,7 @@ const articlesPost = require('../api/articles/post')
 const articlesDelete = require('../api/articles/delete')
 const articleCategoriesPost = require('../api/articles/categories/post')
 const articleCategoriesGet = require('../api/articles/categories/get')
+const articleCategoriesDelete = require('../api/articles/categories/delete')
 
 const filesGet = require('../api/files/get')
 const filesPost = require('../api/files/post')
@@ -56,6 +57,7 @@ mongoose.connection.once('open', () => {
     app.delete('/articles', articlesDelete)
         app.post('/articles/categories', articleCategoriesPost)
         app.get('/articles/categories', articleCategoriesGet)
+        app.delete('/articles/categories', articleCategoriesDelete)
 
     app.post('/user', userPost)
     app.get('/user', userGet)
