@@ -69,6 +69,7 @@ async function createSize (app, file, { id, folder, type, name, alt }) {
             type: type,
             width: metadata.width,
             height: metadata.height,
+            name: fileDirectory,
             alt: alt,
             src: src
         })

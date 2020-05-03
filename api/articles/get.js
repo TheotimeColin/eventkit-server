@@ -9,11 +9,12 @@ module.exports = async function (req, res) {
 
     if (req.query.slug) search.slug = req.query.slug
     if (req.query.id) search.id = req.query.id
+    if (req.query.published == undefined || req.query.published == true) search.published = true
 
     try {
         articles = await Article.find(search)
             .populate('category', '-articles')
-            .populate({ path: 'linked', populate: { path: 'article', select: 'id' }})
+            .populate({ path: 'linked', populate: { path: 'article', select: 'id published' }})
             .populate('cover')
             .populate('thumbnail')
             .sort({ publishedDate: 'asc' })

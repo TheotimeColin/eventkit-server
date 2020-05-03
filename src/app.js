@@ -19,6 +19,7 @@ const articleCategoriesDelete = require('../api/articles/categories/delete')
 
 const filesGet = require('../api/files/get')
 const filesPost = require('../api/files/post')
+const filesDelete = require('../api/files/delete')
 
 const userPost = require('../api/user/post')
 const userGet = require('../api/user/get')
@@ -65,6 +66,7 @@ mongoose.connection.once('open', () => {
 
     app.post('/files', upload.array('files', 5), filesPost)
     app.get('/files', filesGet)
+    app.delete('/files', filesDelete)
 })
 
 app.listen(process.env.PORT || 8081)

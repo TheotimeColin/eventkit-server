@@ -23,16 +23,19 @@ module.exports = async function (req, res) {
 
     try {
         let exists = await Article.findOne({ id })
-        
+
         if (exists) {
-            if (exists.category && exists.category._id != req.body.categoryId) {
+            if (exists.category && !exists.category._id.equals(req.body.categoryId)) {
                 let oldCategory = await ArticleCategory.findById(exists.category._id)
                 oldCategory.articles = oldCategory.articles.filter(article => !article._id.equals(exists._id))
                 await oldCategory.save()
-            }
 
-            newCategory.articles.unshift(exists._id)
-            await newCategory.save()
+                newCategory.articles.unshift(exists._id)
+                await newCategory.save()
+            } else if (!exists.category) {
+                newCategory.articles.unshift(exists._id)
+                await newCategory.save()
+            }
 
             await Promise.all(exists.linked.map(async link => {
                 return await ArticleLink.findByIdAndDelete(link._id)

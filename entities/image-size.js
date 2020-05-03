@@ -5,7 +5,8 @@ const ImageSize = new mongoose.Schema({
     width: { type: Number },
     height: { type: Number },
     src: { type: String },
-    alt: { type: String }
+    alt: { type: String },
+    name: { type: String }
 })
 
 module.exports = mongoose.model('ImageSize', ImageSize);
