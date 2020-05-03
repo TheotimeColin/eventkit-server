@@ -8,8 +8,9 @@ const ArticleSchema = new mongoose.Schema({
     slug: { type: String },
     excerpt: { type: String },
     content: { type: String },
-    cover: { type: String },
-    thumbnail: { type: String },
+    
+    cover: { type: mongoose.Schema.Types.ObjectId, ref: 'ImageSize' },
+    thumbnail: { type: mongoose.Schema.Types.ObjectId, ref: 'ImageSize' },
 
     published: { type: Boolean, default: false },
     publishedDate: { type: Date },
@@ -17,7 +18,11 @@ const ArticleSchema = new mongoose.Schema({
 
     hitCount: { type: Number, default: 0 },
     readTime: { type: Number, default: 5 },
-    category: { type: mongoose.Schema.Types.ObjectId, ref: 'ArticleCategory' }
+    category: { type: mongoose.Schema.Types.ObjectId, ref: 'ArticleCategory' },
+
+    linked: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'ArticleLink' }
+    ]
 })
 
 ArticleSchema.pre('save', function(next) {

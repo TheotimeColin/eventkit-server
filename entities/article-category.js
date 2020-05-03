@@ -3,11 +3,13 @@ const AutoIncrement = require('mongoose-sequence')(mongoose)
 
 const ArticleCategorySchema = new mongoose.Schema({
     id: { type: Number, unique: true },
+    slug: { type: String },
     title: { type: String },
     subtitle: { type: String },
     description: { type: String },
-    thumbnail: { type: String },
-    slug: { type: String },
+
+    thumbnail: { type: mongoose.Schema.Types.ObjectId, ref: 'ImageSize' },
+    
     articles: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'Article' }
     ]

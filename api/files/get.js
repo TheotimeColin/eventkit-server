@@ -5,7 +5,7 @@ module.exports = async function (req, res) {
     let errors = []
     let files = []
 
-    files = await ImageFile.find()
+    files = await ImageFile.find().populate('sizes')
     
     res.send({
         files,

@@ -1,8 +1,10 @@
 const mongoose = require('mongoose')
 
 const ImageFile = new mongoose.Schema({
-    id: { type: String, unique: true },
-    sizes: { type: Array }
+    name: { type: String },
+    sizes: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'ImageSize' }
+    ]
 })
 
 module.exports = mongoose.model('ImageFile', ImageFile);

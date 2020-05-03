@@ -11,7 +11,9 @@ module.exports = async function (req, res) {
     if (req.query.id) search.id = req.query.id
 
     try {
-        categories = await ArticleCategory.find(search).populate('articles', 'id')
+        categories = await ArticleCategory.find(search)
+            .populate('articles', 'id')
+            .populate('thumbnail')
     } catch (err) {
         errors.push({ code: err.code, message: err.errmsg })
     }
