@@ -6,13 +6,16 @@ module.exports = async function (req, res) {
     let articles = []
 
     let search = {}
+    let select = {}
 
     if (req.query.slug) search.slug = req.query.slug
     if (req.query.id) search.id = req.query.id
     if (req.query.published == undefined || req.query.published == true) search.published = true
+    if (req.query.notes !== 'true') select.notes = 0
 
     try {
         articles = await Article.find(search)
+            .select(select)
             .populate('category', '-articles')
             .populate({ path: 'linked', populate: { path: 'article', select: 'id published' }})
             .populate('cover')

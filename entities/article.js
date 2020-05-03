@@ -22,7 +22,9 @@ const ArticleSchema = new mongoose.Schema({
 
     linked: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'ArticleLink' }
-    ]
+    ],
+
+    notes: { type: Array }
 })
 
 ArticleSchema.pre('save', function(next) {
