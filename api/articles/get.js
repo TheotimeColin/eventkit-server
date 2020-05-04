@@ -20,6 +20,7 @@ module.exports = async function (req, res) {
             .populate({ path: 'linked', populate: { path: 'article', select: 'id published' }})
             .populate('cover')
             .populate('thumbnail')
+            .populate({ path: 'reactions', populate: { path: 'type' }})
             .sort({ publishedDate: 'asc' })
 
         if (req.query.hitCount) {

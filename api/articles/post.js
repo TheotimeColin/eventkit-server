@@ -2,6 +2,8 @@ const slugify = require('slugify')
 const Article = require('../../entities/article')
 const ArticleCategory = require('../../entities/article-category')
 const ArticleLink = require('../../entities/article-link')
+const Reaction = require('../../entities/reaction')
+const ReactionType = require('../../entities/reaction-type')
 
 module.exports = async function (req, res) {
     let errors = []
@@ -22,7 +24,7 @@ module.exports = async function (req, res) {
     }))
 
     try {
-        let exists = await Article.findOne({ id })
+        let exists = await Article.findOne({ id }).populate({ path: 'reactions', populate: { path: 'type' }})
 
         if (exists) {
             if (exists.category && !exists.category._id.equals(req.body.categoryId)) {
@@ -41,11 +43,29 @@ module.exports = async function (req, res) {
                 return await ArticleLink.findByIdAndDelete(link._id)
             }))
 
+            let reactions = await Promise.all(req.body.reactions.map(async reaction => {
+                let reactionExists = null
+
+                exists.reactions.forEach(e => {
+                    if (e.type._id.equals(reaction.type._id)) reactionExists = e
+                })
+
+                if (!reactionExists) {
+                    reactionExists = await Reaction.create({
+                        type: reaction.type._id,
+                        article: exists._id
+                    })
+                }
+
+                return reactionExists._id
+            }))
+
             article = await Article.findOneAndUpdate({ id }, {
                 ...req.body,
                 category: newCategory._id,
                 slug: slugify(req.body.title, { lower: true, strict: true }),
                 linked: linkedArticles,
+                reactions: reactions,
                 modifiedDate: new Date()
             }).exec()
 
@@ -53,6 +73,7 @@ module.exports = async function (req, res) {
                 .populate('category')
                 .populate('cover')
                 .populate('thumbnail')
+                .populate('reactions')
         } else {
             article = await Article.create({
                 ...req.body,
@@ -70,6 +91,7 @@ module.exports = async function (req, res) {
                 .populate('category')
                 .populate('cover')
                 .populate('thumbnail')
+                .populate('reactions')
         }
     } catch (err) {
         console.warn(err)

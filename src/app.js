@@ -21,6 +21,10 @@ const filesGet = require('../api/files/get')
 const filesPost = require('../api/files/post')
 const filesDelete = require('../api/files/delete')
 
+const reactionsGet = require('../api/reactions/get')
+const reactionsPost = require('../api/reactions/post')
+const reactionsDelete = require('../api/reactions/delete')
+
 const userPost = require('../api/user/post')
 const userGet = require('../api/user/get')
 const userLogout = require('../api/user/logout')
@@ -67,6 +71,10 @@ mongoose.connection.once('open', () => {
     app.post('/files', upload.array('files', 5), filesPost)
     app.get('/files', filesGet)
     app.delete('/files', filesDelete)
+
+    app.post('/reactions', reactionsPost)
+    app.get('/reactions', reactionsGet)
+    app.delete('/reactions', reactionsDelete)
 })
 
 app.listen(process.env.PORT || 8081)

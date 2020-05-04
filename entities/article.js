@@ -24,6 +24,10 @@ const ArticleSchema = new mongoose.Schema({
         { type: mongoose.Schema.Types.ObjectId, ref: 'ArticleLink' }
     ],
 
+    reactions: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'Reaction' }
+    ],
+
     notes: { type: Array }
 })
 
