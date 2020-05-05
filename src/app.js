@@ -30,6 +30,9 @@ const userPost = require('../api/user/post')
 const userGet = require('../api/user/get')
 const userLogout = require('../api/user/logout')
 
+const generatorsProjectsPost = require('../api/generators/projects/post')
+const generatorsProjectsGet = require('../api/generators/projects/get')
+
 const app = express()
 
 app.use(morgan('combined'))
@@ -78,6 +81,9 @@ mongoose.connection.once('open', () => {
     app.post('/reactions', reactionsPost)
     app.get('/reactions', reactionsGet)
     app.delete('/reactions', reactionsDelete)
+
+    app.post('/generators/projects', generatorsProjectsPost)
+    app.get('/generators/projects', generatorsProjectsGet)
 })
 
 app.listen(process.env.PORT || 8081)
