@@ -21,7 +21,7 @@ module.exports = async function (req, res) {
             .populate('cover')
             .populate('thumbnail')
             .populate({ path: 'reactions', populate: { path: 'type' }})
-            .sort({ publishedDate: 'asc' })
+            .sort({ publishedDate: 'desc' })
 
         if (req.query.hitCount) {
             await Article.findOneAndUpdate(search, { $inc: { hitCount: 1 } })
