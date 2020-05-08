@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const GeneratorProject = require('../../../entities/generator-project')
+const GeneratorProject = require('../../../entities/generator/project')
 
 module.exports = async function (req, res) {
     let errors = []
@@ -10,6 +10,10 @@ module.exports = async function (req, res) {
     } catch (err) {
         errors.push({ code: err.code, message: err.errmsg })
     }
+
+    await project
+        .populate({ path: 'ideas', populate: { path: 'pack' } })
+        .execPopulate()
 
     res.send({
         project,

@@ -1,26 +1,18 @@
 const shortid = require('shortid')
-const GeneratorProject = require('../../../entities/generator-project')
+const GeneratorProject = require('../../../entities/generator/project')
+const generateIdeas = require('../../../utils/generateIdeas')
 
 module.exports = async function (req, res) {
     let errors = []
     let project = null
 
-    const id = req.body.id
-    delete req.body.id
-
     try {
-        let exists = await GeneratorProject.findOne({ id })
+        let exists = await GeneratorProject.findOne({ id: req.body.id })
 
         if (exists) {
-            project = await GeneratorProject.findOneAndUpdate({ id }, {
-                values: req.body.values,
-                modifiedDate: new Date()
-            }, { new: true })
+            project = await updateProject(exists, req.body)
         } else {
-            project = await GeneratorProject.create({
-                ...req.body,
-                id: shortid.generate()
-            })
+            project = await createProject(req.body)
         }
 
         if (!project) throw new Error()
@@ -29,9 +21,29 @@ module.exports = async function (req, res) {
         errors.push({ code: err.code, message: err.errmsg })
     }
 
+    await project
+            .populate({ path: 'ideas', populate: { path: 'pack' } })
+            .execPopulate()
+
     res.send({
         project,
         status: errors.length > 0 ? 0 : 1,
         errors
+    })
+}
+
+async function updateProject (exists, { title, anonymous = false, theme, ideas }) {
+    ideas = await generateIdeas(exists.ideas, ideas)
+
+    return await GeneratorProject.findByIdAndUpdate(exists._id, {
+        modifiedDate: new Date(),
+        title, anonymous, theme, ideas
+    }, { new: true })
+}
+
+async function createProject ({ title, anonymous = false, theme }) {
+    return await GeneratorProject.create({
+        id: shortid.generate(),
+        title, anonymous, theme
     })
 }
