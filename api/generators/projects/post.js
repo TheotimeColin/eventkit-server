@@ -22,7 +22,7 @@ module.exports = async function (req, res) {
     }
 
     await project
-            .populate({ path: 'ideas', populate: { path: 'pack' } })
+            .populate({ path: 'ideas', populate: [{ path: 'pack' }, { path: 'original' }] })
             .execPopulate()
 
     res.send({

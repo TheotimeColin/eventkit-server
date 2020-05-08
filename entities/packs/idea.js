@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
 
 const IdeaSchema = new mongoose.Schema({
-    pack: { type: mongoose.Schema.Types.ObjectId, ref: 'Pack' },
     content: { type: Object },
+    original: { type: mongoose.Schema.Types.ObjectId, ref: 'Idea' },
+    pack: { type: mongoose.Schema.Types.ObjectId, ref: 'Pack' },
     disabled: { type: Boolean, default: false }
 })
 

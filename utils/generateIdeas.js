@@ -14,6 +14,7 @@ module.exports = async function generateIdeas (original, newIdeas) {
             await result.update({
                 content: idea.content,
                 disabled: idea.disabled,
+                original: idea.original ? idea.original._id : null,
                 pack: idea.pack ? idea.pack._id : null
             }, { new: true }).exec()
 
@@ -22,6 +23,7 @@ module.exports = async function generateIdeas (original, newIdeas) {
             result = await Idea.create({
                 content: idea.content,
                 disabled: idea.disabled,
+                original: idea.original ? idea.original._id : null,
                 pack: idea.pack ? idea.pack._id : null
             })
         }
