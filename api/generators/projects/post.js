@@ -41,9 +41,11 @@ async function updateProject (exists, { title, anonymous = false, theme, ideas }
     }, { new: true })
 }
 
-async function createProject ({ title, anonymous = false, theme }) {
+async function createProject ({ title, anonymous = false, theme, ideas }) {
+    ideas = ideas ? await generateIdeas([], ideas) : []
+
     return await GeneratorProject.create({
         id: shortid.generate(),
-        title, anonymous, theme
+        title, anonymous, theme, ideas
     })
 }

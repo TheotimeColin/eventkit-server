@@ -36,6 +36,9 @@ const generatorsProjectsGet = require('../api/generators/projects/get')
 const packsGet = require('../api/generators/packs/get')
 const packsPost = require('../api/generators/packs/post')
 
+const premiumPost = require('../api/premium/post')
+const premiumPortal = require('../api/premium/portal')
+
 const app = express()
 
 app.use(morgan('combined'))
@@ -91,7 +94,9 @@ mongoose.connection.once('open', () => {
     app.get('/generators/packs', packsGet)
     app.post('/generators/packs', packsPost)
 
-    
+    app.post('/premium', premiumPost)
+        app.post('/premium/portal', premiumPortal)
+
 })
 
 app.listen(process.env.PORT || 8081)

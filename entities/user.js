@@ -2,8 +2,15 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
 let UserSchema = new mongoose.Schema({
+    name: { type: String },
     email: { type: String },
     password: { type: String },
+    
+    stripeId: { type: String },
+    plan: { type: String },
+    planRenewal: { type: Date },
+    premiumProjects: { type: Number, default: 0 },
+
     admin: { type: Boolean, default: false }
 })
 

@@ -5,13 +5,13 @@ const ProjectSchema = new mongoose.Schema({
     title: { type: String },
 
     theme: { type: Object, default: ({}) },
-
     ideas: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'Idea' }
     ],
 
     anonymous: { type: Boolean, default: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    premium: { type: Boolean, default: false },
 
     creationDate: { type: Date },
     modifiedDate: { type: Date }
