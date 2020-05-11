@@ -9,6 +9,7 @@ module.exports = async function (req, res) {
         projects = await KitProject.find({ ...req.query })
             .populate('kit')
             .populate({ path: 'ideas', populate: [{ path: 'pack' }, { path: 'original' }] })
+            .sort({ modifiedDate: 'desc' })
     } catch (err) {
         console.error(err)
         errors.push({ code: err.code, message: err.errmsg })

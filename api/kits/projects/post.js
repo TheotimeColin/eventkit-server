@@ -25,9 +25,9 @@ module.exports = async function (req, res) {
     }
 
     await project
-            .populate({ path: 'ideas', populate: [{ path: 'pack' }, { path: 'original' }] })
-            .populate('kit')
-            .execPopulate()
+        .populate({ path: 'ideas', populate: [{ path: 'pack' }, { path: 'original' }] })
+        .populate('kit')
+        .execPopulate()
 
     res.send({
         project,
@@ -36,24 +36,24 @@ module.exports = async function (req, res) {
     })
 }
 
-async function updateProject (exists, { title, anonymous = false, theme, ideas }) {
+async function updateProject (exists, { title, anonymous = false, theme, ideas, template = false }) {
     ideas = await generateIdeas(exists.ideas, ideas)
 
     return await KitProject.findByIdAndUpdate(exists._id, {
         modifiedDate: new Date(),
-        title, anonymous, theme, ideas
+        title, anonymous, theme, ideas, template
     }, { new: true })
 }
 
-async function createProject ({ title, anonymous = false, theme, ideas, kit, user }) {
+async function createProject ({ title, anonymous = false, theme, ideas, kit, user, template = false }) {
     try {
         let values = {
             id: shortid.generate(),
-            title, anonymous, theme
+            title, anonymous, theme, template
         }
 
         ideas = ideas ? await generateIdeas([], ideas) : []
-        kit = await Kit.findOne({ slug: kit })
+        kit = await Kit.findById(kit)
 
         if (!kit) throw 'non-existing-kit'
 
