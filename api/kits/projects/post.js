@@ -1,5 +1,6 @@
 const shortid = require('shortid')
-const GeneratorProject = require('../../../entities/generator/project')
+const Kit = require('../../../entities/kits/kit')
+const KitProject = require('../../../entities/kits/project')
 const generateIdeas = require('../../../utils/generateIdeas')
 
 module.exports = async function (req, res) {
@@ -7,7 +8,7 @@ module.exports = async function (req, res) {
     let project = null
 
     try {
-        let exists = await GeneratorProject.findOne({ id: req.body.id })
+        let exists = await KitProject.findOne({ id: req.body.id })
 
         if (exists) {
             project = await updateProject(exists, req.body)
@@ -35,17 +36,20 @@ module.exports = async function (req, res) {
 async function updateProject (exists, { title, anonymous = false, theme, ideas }) {
     ideas = await generateIdeas(exists.ideas, ideas)
 
-    return await GeneratorProject.findByIdAndUpdate(exists._id, {
+    return await KitProject.findByIdAndUpdate(exists._id, {
         modifiedDate: new Date(),
         title, anonymous, theme, ideas
     }, { new: true })
 }
 
-async function createProject ({ title, anonymous = false, theme, ideas }) {
+async function createProject ({ title, anonymous = false, theme, ideas, kit, user }) {
     ideas = ideas ? await generateIdeas([], ideas) : []
 
-    return await GeneratorProject.create({
+    kit = await Kit.findOne({ slug: kit })
+
+    return await KitProject.create({
         id: shortid.generate(),
-        title, anonymous, theme, ideas
+        kit: kit._id,
+        title, anonymous, theme, ideas, user
     })
 }

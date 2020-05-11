@@ -8,8 +8,8 @@ const ProjectSchema = new mongoose.Schema({
     ideas: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'Idea' }
     ],
+    kit: { type: mongoose.Schema.Types.ObjectId, ref: 'Kit' },
 
-    anonymous: { type: Boolean, default: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     premium: { type: Boolean, default: false },
 
@@ -24,4 +24,4 @@ ProjectSchema.pre('save', function(next) {
     next()
 })
 
-module.exports = mongoose.model('GeneratorProject', ProjectSchema);
+module.exports = mongoose.model('KitProject', ProjectSchema);

@@ -30,11 +30,14 @@ const userPost = require('../api/user/post')
 const userGet = require('../api/user/get')
 const userLogout = require('../api/user/logout')
 
-const generatorsProjectsPost = require('../api/generators/projects/post')
-const generatorsProjectsGet = require('../api/generators/projects/get')
+const kitsGet = require('../api/kits/get')
+const kitsPost = require('../api/kits/post')
 
-const packsGet = require('../api/generators/packs/get')
-const packsPost = require('../api/generators/packs/post')
+const kitsProjectsPost = require('../api/kits/projects/post')
+const kitsProjectsGet = require('../api/kits/projects/get')
+
+const packsGet = require('../api/kits/packs/get')
+const packsPost = require('../api/kits/packs/post')
 
 const premiumPost = require('../api/premium/post')
 const premiumPortal = require('../api/premium/portal')
@@ -88,11 +91,12 @@ mongoose.connection.once('open', () => {
     app.get('/reactions', reactionsGet)
     app.delete('/reactions', reactionsDelete)
 
-    app.post('/generators/projects', generatorsProjectsPost)
-    app.get('/generators/projects', generatorsProjectsGet)
-
-    app.get('/generators/packs', packsGet)
-    app.post('/generators/packs', packsPost)
+    app.get('/kits', kitsGet)
+    app.post('/kits', kitsPost)
+        app.post('/kits/projects', kitsProjectsPost)
+        app.get('/kits/projects', kitsProjectsGet)
+        app.get('/kits/packs', packsGet)
+        app.post('/kits/packs', packsPost)
 
     app.post('/premium', premiumPost)
         app.post('/premium/portal', premiumPortal)
