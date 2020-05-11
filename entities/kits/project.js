@@ -11,6 +11,8 @@ const ProjectSchema = new mongoose.Schema({
     kit: { type: mongoose.Schema.Types.ObjectId, ref: 'Kit' },
 
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    userAnonymous: { type: String },
+
     premium: { type: Boolean, default: false },
 
     creationDate: { type: Date },

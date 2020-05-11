@@ -1,4 +1,6 @@
 const shortid = require('shortid')
+const ObjectId = require('mongoose').Types.ObjectId;
+
 const Kit = require('../../../entities/kits/kit')
 const KitProject = require('../../../entities/kits/project')
 const generateIdeas = require('../../../utils/generateIdeas')
@@ -24,6 +26,7 @@ module.exports = async function (req, res) {
 
     await project
             .populate({ path: 'ideas', populate: [{ path: 'pack' }, { path: 'original' }] })
+            .populate('kit')
             .execPopulate()
 
     res.send({
@@ -43,13 +46,29 @@ async function updateProject (exists, { title, anonymous = false, theme, ideas }
 }
 
 async function createProject ({ title, anonymous = false, theme, ideas, kit, user }) {
-    ideas = ideas ? await generateIdeas([], ideas) : []
+    try {
+        let values = {
+            id: shortid.generate(),
+            title, anonymous, theme
+        }
 
-    kit = await Kit.findOne({ slug: kit })
+        ideas = ideas ? await generateIdeas([], ideas) : []
+        kit = await Kit.findOne({ slug: kit })
 
-    return await KitProject.create({
-        id: shortid.generate(),
-        kit: kit._id,
-        title, anonymous, theme, ideas, user
-    })
+        if (!kit) throw 'non-existing-kit'
+
+        values.kit = kit._id
+        values.ideas = ideas
+
+        if (ObjectId.isValid(user)) {
+            values.user = user
+        } else {
+            values.userAnonymous = user
+        }
+
+        return await KitProject.create(values)
+    } catch (e) {
+        console.error(e)
+        return false
+    }
 }
