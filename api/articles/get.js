@@ -1,7 +1,9 @@
-const mongoose = require('mongoose')
+const authenticate = require('../../utils/authenticate')
 const Article = require('../../entities/article')
 
 module.exports = async function (req, res) {
+    let user = await authenticate(req.headers)
+
     let errors = []
     let articles = []
 
@@ -10,7 +12,7 @@ module.exports = async function (req, res) {
 
     if (req.query.slug) search.slug = req.query.slug
     if (req.query.id) search.id = req.query.id
-    if (req.query.published == undefined || req.query.published == true) search.published = true
+    if (req.query.published == undefined || req.query.published == true || !user || !user.admin) search.published = true
     if (req.query.notes !== 'true') select.notes = 0
 
     try {

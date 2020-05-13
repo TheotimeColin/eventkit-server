@@ -1,7 +1,15 @@
+const authenticate = require('../../utils/authenticate')
+
 const slugify = require('slugify')
 const Kit = require('../../entities/kits/kit')
 
 module.exports = async function (req, res) {
+    let user = await authenticate(req.headers)
+    if (!user || !user.admin) {
+        res.sendStatus(403)
+        return
+    }
+    
     let errors = []
     let kit = null
 

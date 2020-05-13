@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
+const {
+    generatePassword
+} = require('../utils/password')
+
 let UserSchema = new mongoose.Schema({
     name: { type: String },
     email: { type: String },
@@ -8,25 +12,18 @@ let UserSchema = new mongoose.Schema({
     
     stripeId: { type: String },
     plan: { type: String },
-    planRenewal: { type: Date },
-    premiumProjects: { type: Number, default: 0 },
 
-    admin: { type: Boolean, default: false }
+    admin: { type: Boolean }
 })
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', async function(next) {
     var user = this
     if (!user.isModified('password')) return next()
 
-    bcrypt.genSalt(10, function(err, salt) {
-        if (err) return next(err)
+    let hash = await generatePassword(user.password)
+    user.password = hash
 
-        bcrypt.hash(user.password, salt, function(err, hash) {
-            if (err) return next(err)
-            user.password = hash
-            next()
-        })
-    })
+    next()
 })
 
 UserSchema.methods.comparePassword = function(candidatePassword) {
@@ -38,4 +35,5 @@ UserSchema.methods.comparePassword = function(candidatePassword) {
     
 }
 
-module.exports = mongoose.model('User', UserSchema);
+global.UserSchema = global.UserSchema || mongoose.model('User', UserSchema)
+module.exports = global.UserSchema

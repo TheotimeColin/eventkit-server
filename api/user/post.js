@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const User = require('../../entities/user')
 const KitProject = require('../../entities/kits/project')
+const { welcome } = require('../../mails')
 
 const jwt = require('jsonwebtoken')
 
@@ -30,6 +31,12 @@ module.exports = async function (req, res) {
                 anonymous: req.body.userAnonymous,
                 user: user._id
             })
+
+            if (!user) throw 'error'            
+            
+            req.app.locals.mailer.sendMail(welcome(user.email, {
+                name: user.name
+            }))
 
             authenticated = true
         }

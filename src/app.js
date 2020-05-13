@@ -8,6 +8,7 @@ const MongoClient = require('mongodb').MongoClient
 const mongoose = require('mongoose')
 const multer  = require('multer');
 const AWS = require('aws-sdk')
+const nodemailer = require('nodemailer')
 const AutoIncrementFactory = require('mongoose-sequence');
 
 const articlesGet = require('../api/articles/get')
@@ -29,12 +30,15 @@ const reactionsDelete = require('../api/reactions/delete')
 const userPost = require('../api/user/post')
 const userGet = require('../api/user/get')
 const userLogout = require('../api/user/logout')
+const userResetGet = require('../api/user/reset/get')
+const userResetPost = require('../api/user/reset/post')
 
 const kitsGet = require('../api/kits/get')
 const kitsPost = require('../api/kits/post')
 
 const kitsProjectsPost = require('../api/kits/projects/post')
 const kitsProjectsGet = require('../api/kits/projects/get')
+const kitsProjectsDelete = require('../api/kits/projects/delete')
 
 const packsGet = require('../api/kits/packs/get')
 const packsPost = require('../api/kits/packs/post')
@@ -66,6 +70,15 @@ const upload = multer({ storage: storage })
 
 app.locals.s3 = s3
 app.locals.increment = AutoIncrementFactory(mongoose.connection)
+app.locals.mailer = nodemailer.createTransport({
+    host: 'pro2.mail.ovh.net',
+    port: '587',
+    secure: false,
+    auth: {
+        user: 'theotime@eventkit.social',
+        pass: 'GibLorMin111%'
+    }
+})
 
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
 
@@ -82,6 +95,8 @@ mongoose.connection.once('open', () => {
     app.post('/user', userPost)
     app.get('/user', userGet)
     app.post('/logout', userLogout)
+        app.get('/user/reset', userResetGet)
+        app.post('/user/reset', userResetPost)
 
     app.post('/files', upload.array('files', 5), filesPost)
     app.get('/files', filesGet)
@@ -95,6 +110,7 @@ mongoose.connection.once('open', () => {
     app.post('/kits', kitsPost)
         app.post('/kits/projects', kitsProjectsPost)
         app.get('/kits/projects', kitsProjectsGet)
+        app.delete('/kits/projects', kitsProjectsDelete)
         app.get('/kits/packs', packsGet)
         app.post('/kits/packs', packsPost)
 

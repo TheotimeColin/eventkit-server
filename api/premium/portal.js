@@ -1,7 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_KEY)
-
 const User = require('../../entities/user')
-
 
 module.exports = async function (req, res) {
     let errors = []

@@ -14,11 +14,10 @@ module.exports = async function (req, res) {
         customer = await createCustomer({ ...req.body, email: user.email })
         await user.update({ stripeId: customer.id, premiumProjects: 3 }).exec()
 
-        subscription = await createSubscription(customer)
+        subscription = await createSubscription(customer, req.body.plan)
 
         if (subscription) {
-            let now = new Date()
-            await user.update({ planRenewal: new Date(now.setMonth(now.getMonth() + 1)) }).exec()
+            await user.update({ plan: subscription.plan.id }).exec()
         }
     } catch (err) {
         console.log(err)
@@ -42,10 +41,10 @@ async function createCustomer ({ email, paymentMethod }) {
     })
 }
 
-async function createSubscription (customer) {
+async function createSubscription (customer, plan) {
     return await stripe.subscriptions.create({
         customer: customer.id,
-        items: [{ plan: "premium-personal-1" }],
+        items: [{ plan: plan }],
         expand: ["latest_invoice.payment_intent"]
     })
 }

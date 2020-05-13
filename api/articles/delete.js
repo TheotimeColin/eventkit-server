@@ -1,7 +1,10 @@
-const mongoose = require('mongoose')
+const authenticate = require('../../utils/authenticate')
 const Article = require('../../entities/article')
 
 module.exports = async function (req, res) {
+    let user = await authenticate(req.headers)
+    if (!user || !user.admin) res.sendStatus(403)
+    
     let errors = []
 
     try {

@@ -1,4 +1,6 @@
 const slugify = require('slugify')
+const authenticate = require('../../utils/authenticate')
+
 const Article = require('../../entities/article')
 const ArticleCategory = require('../../entities/article-category')
 const ArticleLink = require('../../entities/article-link')
@@ -6,6 +8,12 @@ const Reaction = require('../../entities/reaction')
 const ReactionType = require('../../entities/reaction-type')
 
 module.exports = async function (req, res) {
+    let user = await authenticate(req.headers)
+    if (!user || !user.admin) {
+        res.sendStatus(403)
+        return
+    }
+
     let errors = []
     let article = null
     let newCategory = req.body.categoryId ? await ArticleCategory.findById(req.body.categoryId) : false

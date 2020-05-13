@@ -1,8 +1,14 @@
-const mongoose = require('mongoose')
+const authenticate = require('../../utils/authenticate')
 const ImageFile = require('../../entities/image-file')
 const ImageSize = require('../../entities/image-size')
 
 module.exports = async function (req, res) {
+    let user = await authenticate(req.headers)
+    if (!user || !user.admin) {
+        res.sendStatus(403)
+        return
+    }
+
     let errors = []
 
     try {

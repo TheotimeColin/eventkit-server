@@ -1,7 +1,9 @@
-const mongoose = require('mongoose')
+const authenticate = require('../../utils/authenticate')
 const Kit = require('../../entities/kits/kit')
 
 module.exports = async function (req, res) {
+    let user = await authenticate(req.headers)
+
     let errors = []
     let kits = []
 
@@ -9,8 +11,8 @@ module.exports = async function (req, res) {
 
     if (req.query.slug) search.slug = req.query.slug
     if (req.query._id) search._id = req.query._id
-    if (req.query.published == undefined || req.query.published == true) search.published = true
-    console.log(search)
+    if (req.query.published == undefined || req.query.published == true || !user || !user.admin) search.published = true
+    
     try {
         kits = await Kit.find(search)
             .populate('cover')
