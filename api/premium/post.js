@@ -16,12 +16,12 @@ module.exports = async function (req, res) {
 
         subscription = await createSubscription(customer, req.body.plan)
 
-        if (subscription) {
+        if (subscription.latest_invoice.payment_intent.status == 'succeeded') {
             await user.update({ plan: subscription.plan.id }).exec()
         }
     } catch (err) {
         console.log(err)
-        errors.push({ code: err.code, message: err.errmsg })
+        errors.push(err)
     }
 
     res.send({
@@ -44,7 +44,8 @@ async function createCustomer ({ email, paymentMethod }) {
 async function createSubscription (customer, plan) {
     return await stripe.subscriptions.create({
         customer: customer.id,
-        items: [{ plan: plan }],
+        items: [{ plan }],
+        coupon: plan == 'creative-1' ? 'early-30' : 'early-40',
         expand: ["latest_invoice.payment_intent"]
     })
 }
