@@ -23,7 +23,7 @@ module.exports = async function (req, res) {
         if (!project) throw 'error'
 
         await project
-            .populate({ path: 'ideas', populate: [{ path: 'pack' }, { path: 'original' }] })
+            .populate({ path: 'ideas', populate: [{ path: 'original' }] })
             .populate('kit')
             .execPopulate()
     } catch (err) {

@@ -40,8 +40,10 @@ const kitsProjectsPost = require('../api/kits/projects/post')
 const kitsProjectsGet = require('../api/kits/projects/get')
 const kitsProjectsDelete = require('../api/kits/projects/delete')
 
-const packsGet = require('../api/kits/packs/get')
-const packsPost = require('../api/kits/packs/post')
+const ideasGet = require('../api/kits/ideas/get')
+const ideasPost = require('../api/kits/ideas/post')
+const ideasTagsGet = require('../api/kits/ideas/tags/get')
+const ideasTagsPost = require('../api/kits/ideas/tags/post')
 
 const premiumPost = require('../api/premium/post')
 const premiumPortal = require('../api/premium/portal')
@@ -111,8 +113,11 @@ mongoose.connection.once('open', () => {
         app.post('/kits/projects', kitsProjectsPost)
         app.get('/kits/projects', kitsProjectsGet)
         app.delete('/kits/projects', kitsProjectsDelete)
-        app.get('/kits/packs', packsGet)
-        app.post('/kits/packs', packsPost)
+        app.get('/kits/ideas', ideasGet)
+        app.post('/kits/ideas', ideasPost)
+            app.get('/kits/ideas/tags', ideasTagsGet)
+            app.post('/kits/ideas/tags', ideasTagsPost)
+        
 
     app.post('/premium', premiumPost)
         app.post('/premium/portal', premiumPortal)
