@@ -6,10 +6,10 @@ module.exports = async function (req, res) {
     let errors = []
 
     try {
-        let user = await authenticate(req.headers)
         let project = await KitProject.findById(req.body._id)
-
         if (!project) throw 'project-not-found'
+
+        let user = await authenticate(req.headers)
         if (!user || !project.user.equals(user._id)) throw 'not-owner'
 
         await Promise.all(project.ideas.map(async idea => {

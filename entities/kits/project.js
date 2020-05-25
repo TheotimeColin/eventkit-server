@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
 
-const ProjectSchema = new mongoose.Schema({
+let ProjectSchema = new mongoose.Schema({
     id: { type: String, unique: true },
     title: { type: String },
+    description: { type: String },
 
     theme: { type: Object, default: ({}) },
     ideas: [
@@ -11,11 +12,14 @@ const ProjectSchema = new mongoose.Schema({
     kit: { type: mongoose.Schema.Types.ObjectId, ref: 'Kit' },
 
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    userAnonymous: { type: String },
 
     template: { type: Boolean, default: false },
+    temporary: { type: Boolean, default: false },
     premium: { type: Boolean, default: false },
 
+    mainZippedFile: { type: String },
+
+    publishedDate: { type: Date },
     creationDate: { type: Date },
     modifiedDate: { type: Date }
 })
@@ -27,4 +31,5 @@ ProjectSchema.pre('save', function(next) {
     next()
 })
 
-module.exports = mongoose.model('KitProject', ProjectSchema);
+global.ProjectSchema = global.ProjectSchema || mongoose.model('KitProject', ProjectSchema)
+module.exports = global.ProjectSchema

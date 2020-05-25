@@ -1,9 +1,9 @@
 module.exports = {
     welcome: (to, { name = 'Joe' }) => ({
-        from: "theotime@eventkit.social",
+        from: "no-reply@eventkit.social",
         to: to,
         envelope: {
-            from: `Théotime d'eventkit <theotime@eventkit.social>`,
+            from: `Théotime d'eventkit <no-reply@eventkit.social>`,
             to: to,
         },
         subject: `Bienvenue sur eventkit, ${name}`,
@@ -11,10 +11,10 @@ module.exports = {
         html: require('./templates/welcome.js')({ name })
     }),
     reset: (to, { name, token }) => ({
-        from: "theotime@eventkit.social",
+        from: "no-reply@eventkit.social",
         to: to,
         envelope: {
-            from: `Théotime d'eventkit <theotime@eventkit.social>`,
+            from: `Théotime d'eventkit <no-reply@eventkit.social>`,
             to: to,
         },
         subject: `Réinitialiser ton mot de passe eventkit`,

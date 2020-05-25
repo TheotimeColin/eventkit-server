@@ -17,6 +17,7 @@ module.exports = async function (req, res) {
         kits = await Kit.find(search)
             .populate('cover')
             .populate('thumbnail')
+            .populate('variants')
             .sort({ publishedDate: 'desc' })
     } catch (err) {
         errors.push({ code: err.code, message: err.errmsg })

@@ -9,17 +9,31 @@ module.exports = async function (req, res) {
     let search = {}
 
     try {
-        if (!req.query.template && !req.query.userAnonymous && !user) throw 'not-authenticated'
+        if (req.query.template) search.template = true
+        if (user && !req.query.template) search.user = user._id
+        if (!req.query.template) search.temporary = false
 
-        if (req.query.userAnonymous) search.userAnonymous = req.query.userAnonymous
-        if (!req.query.id && !req.query.userAnonymous && !user || req.query.template) search.template = true
-        if (req.query.id && req.query.userAnonymous || req.query.id && user) search.id = req.query.id
-        if (req.query.id && user || user && !req.query.template) search.user = user._id
+        if (req.query.id) {
+            search.id = req.query.id
 
+            if (user) {
+                search.user = user._id
+                delete search.temporary
+            } else {
+                search.temporary = true
+            }
+        }
+        
         projects = await KitProject.find(search)
             .populate('kit')
             .populate({ path: 'ideas', populate: [{ path: 'original' }] })
             .sort({ modifiedDate: 'desc' })
+
+        projects.forEach(project => {
+            if (project.mainZippedFile) {
+                project.mainZippedFile = `https://${process.env.S3_BUCKET}.s3.eu-west-3.amazonaws.com/${project.mainZippedFile}`
+            }
+        })
     } catch (err) {
         console.error(err)
         errors.push(err)

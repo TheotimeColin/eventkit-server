@@ -12,6 +12,7 @@ let UserSchema = new mongoose.Schema({
     
     stripeId: { type: String },
     plan: { type: String },
+    projects: { type: Number, default: 0 },
 
     admin: { type: Boolean }
 })

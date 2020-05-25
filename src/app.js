@@ -29,6 +29,7 @@ const reactionsDelete = require('../api/reactions/delete')
 
 const userPost = require('../api/user/post')
 const userGet = require('../api/user/get')
+const userDelete = require('../api/user/delete')
 const userLogout = require('../api/user/logout')
 const userResetGet = require('../api/user/reset/get')
 const userResetPost = require('../api/user/reset/post')
@@ -45,13 +46,15 @@ const ideasPost = require('../api/kits/ideas/post')
 const ideasTagsGet = require('../api/kits/ideas/tags/get')
 const ideasTagsPost = require('../api/kits/ideas/tags/post')
 
+const premiumGet = require('../api/premium/get')
 const premiumPost = require('../api/premium/post')
 const premiumPortal = require('../api/premium/portal')
 
 const app = express()
 
 app.use(morgan('combined'))
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: '10mb', extended: true }))
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
 app.use(cors())
 
 mongoose.connect(process.env.MONGO)
@@ -96,6 +99,7 @@ mongoose.connection.once('open', () => {
 
     app.post('/user', userPost)
     app.get('/user', userGet)
+    app.delete('/user', userDelete)
     app.post('/logout', userLogout)
         app.get('/user/reset', userResetGet)
         app.post('/user/reset', userResetPost)
@@ -110,16 +114,16 @@ mongoose.connection.once('open', () => {
 
     app.get('/kits', kitsGet)
     app.post('/kits', kitsPost)
-        app.post('/kits/projects', kitsProjectsPost)
+        app.post('/kits/projects', upload.single('zip'), kitsProjectsPost)
         app.get('/kits/projects', kitsProjectsGet)
         app.delete('/kits/projects', kitsProjectsDelete)
         app.get('/kits/ideas', ideasGet)
         app.post('/kits/ideas', ideasPost)
             app.get('/kits/ideas/tags', ideasTagsGet)
             app.post('/kits/ideas/tags', ideasTagsPost)
-        
 
     app.post('/premium', premiumPost)
+    app.get('/premium', premiumGet)
         app.post('/premium/portal', premiumPortal)
 
 })

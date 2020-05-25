@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const User = require('../../entities/user')
-const KitProject = require('../../entities/kits/project')
 const { welcome } = require('../../mails')
+const KitProject = require('../../entities/kits/project')
 
 const jwt = require('jsonwebtoken')
 
@@ -27,12 +27,17 @@ module.exports = async function (req, res) {
                 password: req.body.password
             })
 
-            if (req.body.userAnonymous) await attributeProjects({
-                anonymous: req.body.userAnonymous,
-                user: user._id
-            })
+            if (!user) throw 'error'
 
-            if (!user) throw 'error'            
+            if (req.body.lastProject) {
+                let lastProject = await KitProject.findById(req.body.lastProject)
+
+                if (lastProject) {
+                    lastProject.temporary = false
+                    lastProject.user = user._id
+                    await lastProject.save()
+                }
+            }
             
             req.app.locals.mailer.sendMail(welcome(user.email, {
                 name: user.name
@@ -56,8 +61,4 @@ module.exports = async function (req, res) {
         status: errors.length > 0 ? 0 : 1,
         errors
     }) 
-}
-
-async function attributeProjects ({ anonymous, user }) {
-    return await KitProject.updateMany({ userAnonymous: anonymous }, { user: user, $unset: { userAnonymous: '' } })
 }

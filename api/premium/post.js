@@ -1,4 +1,5 @@
 const User = require('../../entities/user')
+const KitProject = require('../../entities/kits/project')
 
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 
@@ -45,7 +46,7 @@ async function createSubscription (customer, plan) {
     return await stripe.subscriptions.create({
         customer: customer.id,
         items: [{ plan }],
-        coupon: plan == 'creative-1' ? 'early-30' : 'early-40',
+        coupon: 'early-40',
         expand: ["latest_invoice.payment_intent"]
     })
 }
