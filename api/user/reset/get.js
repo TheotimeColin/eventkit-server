@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const shortid = require('shortid')
-const Token = require('../../../entities/Token')
-const User = require('../../../entities/User')
+const Token = require('../../../entities/token')
+const User = require('../../../entities/user')
 const { reset } = require('../../../mails')
 
 module.exports = async function (req, res) {

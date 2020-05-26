@@ -2,8 +2,8 @@ const {
     generatePassword
 } = require('../../../utils/password')
 
-const Token = require('../../../entities/Token')
-const User = require('../../../entities/User')
+const Token = require('../../../entities/token')
+const User = require('../../../entities/user')
 
 module.exports = async function (req, res) {
     let errors = []
