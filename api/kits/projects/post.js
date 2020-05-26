@@ -42,15 +42,21 @@ module.exports = async function (req, res) {
     })
 }
 
-async function updateProject (exists, { title, description, theme, ideas, template = false }, user, file = null, app) {
+async function updateProject (exists, { title, description, theme, ideas, template = false, templateTags = '' }, user, file = null, app) {
     if (exists.temporary || exists.premium && !user.plan) return false
     let values = {
         modifiedDate: new Date(),
         user: user._id,
-        title, theme: JSON.parse(theme), ideas, template, description
+        title, theme: JSON.parse(theme), ideas, description
+    }
+
+    if (user.admin) {
+        values.template = template
+        values.templateTags = templateTags
     }
 
     values.ideas = await generateIdeas(exists.ideas, JSON.parse(ideas))
+
     if (file) {
         let fileName = 'projects/' + slugify(title, { strict: true, lower: true }).slice(0, 20) + '-' + shortid.generate() + '.zip'
 
@@ -71,9 +77,12 @@ async function updateProject (exists, { title, description, theme, ideas, templa
 
 async function createProject ({ title, theme, ideas, kit, template = false }, user) {
     try {
+        console.log(theme)
         let values = {
             id: shortid.generate(),
-            title, theme: JSON.parse(theme), template
+            title,
+            theme: JSON.parse(theme),
+            template
         }
 
         ideas = ideas ? await generateIdeas([], JSON.parse(ideas)) : []

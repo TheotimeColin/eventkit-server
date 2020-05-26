@@ -9,7 +9,11 @@ module.exports = async function (req, res) {
     let search = {}
 
     try {
-        if (req.query.template) search.template = true
+        if (req.query.template) {
+            search.template = true
+            if (req.query.kit) search.kit = req.query.kit
+        }
+        
         if (user && !req.query.template) search.user = user._id
         if (!req.query.template) search.temporary = false
 
