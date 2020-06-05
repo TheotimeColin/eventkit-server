@@ -7,7 +7,7 @@ module.exports = async function (req, res) {
     let errors = []
     let kits = []
 
-    let search = {}
+    let search = { lang: 'fr' }
 
     if (req.query.slug) search.slug = req.query.slug
     if (req.query._id) search._id = req.query._id
@@ -18,9 +18,28 @@ module.exports = async function (req, res) {
             .populate('cover')
             .populate('thumbnail')
             .populate('variants')
+            .populate({ path: 'translations', populate: { path: 'variants' } })
             .sort({ publishedDate: 'desc' })
     } catch (err) {
         errors.push({ code: err.code, message: err.errmsg })
+    }
+
+    const TRANSLATABLE = ['title', 'content', 'excerpt', 'subtitle', 'variants']
+
+    if (req.query.lang ) {
+        kits = kits.map(kit => {
+            kit = kit.toObject()
+            let translated = kit.translations.find(t => t.lang == req.query.lang)
+            
+            if (translated) {
+                translated = Object.keys(translated).filter(key => TRANSLATABLE.includes(key)).reduce((obj, key) => {
+                  obj[key] = translated[key]
+                  return obj
+                }, {})
+            }
+
+            return { ...kit, ...translated }
+        })
     }
     
     res.send({

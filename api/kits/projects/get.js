@@ -30,7 +30,7 @@ module.exports = async function (req, res) {
         
         projects = await KitProject.find(search)
             .populate('kit')
-            .populate({ path: 'ideas', populate: [{ path: 'original' }] })
+            .populate({ path: 'ideas', populate: [{ path: 'original' }, { path: 'category' }] })
             .sort({ modifiedDate: 'desc' })
 
         projects.forEach(project => {

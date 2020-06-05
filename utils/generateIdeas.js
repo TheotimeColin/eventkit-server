@@ -1,39 +1,67 @@
 const Idea = require('../entities/packs/idea')
+const IdeaCategory = require('../entities/packs/idea-category')
 
 module.exports = async function generateIdeas (original, newIdeas) {
-    let result = []
+    let results = []
     original = original.map(v => ({
         value: v,
         processed: false
     }))
 
-    result = await Promise.all(newIdeas.map(async idea => {
-        let result = idea.new ? null : await Idea.findById(idea._id)
+    try {
+        await newIdeas.reduce(async (previousPromise, idea) => {
+            await previousPromise
 
-        if (result) {
-            await result.update({
-                content: idea.content,
-                disabled: idea.disabled,
-                original: idea.original ? idea.original._id : null,
-                pack: idea.pack ? idea.pack._id : null
-            }, { new: true }).exec()
+            let result = idea.new ? null : await Idea.findById(idea._id)
+            let category = null
+            
+            if (idea.category) {
+                category = idea.category.new ? await IdeaCategory.findOne({ id: idea.category._id }) : await IdeaCategory.findById(idea.category._id)
 
-            original = original.map(v => ({...v, processed: v.value.equals(result._id) ? true : v.processed }))
-        } else {
-            result = await Idea.create({
-                content: idea.content,
-                disabled: idea.disabled,
-                original: idea.original ? idea.original._id : null,
-                pack: idea.pack ? idea.pack._id : null
-            })
-        }
+                if (category) {
+                    await category.update({
+                        label: idea.category.label
+                    }, { new: true }).exec()
+                } else {
+                    category = await IdeaCategory.create({
+                        id: idea.category._id,
+                        label: idea.category.label,
+                        ideas: []
+                    })
+                }
+            }
 
-        return result
-    }))
+            if (result) {
+                await result.update({
+                    content: idea.content,
+                    disabled: idea.disabled,
+                    category: category ? category._id : undefined,
+                    original: idea.original ? idea.original._id : null,
+                    pack: idea.pack ? idea.pack._id : null
+                }, { new: true }).exec()
 
-    await Promise.all(original.filter(v => !v.processed).map(async idea => {
-        return await Idea.findByIdAndDelete(idea.value)
-    }))
+                original = original.map(v => ({...v, processed: v.value.equals(result._id) ? true : v.processed }))
+            } else {
+                result = await Idea.create({
+                    content: idea.content,
+                    disabled: idea.disabled,
+                    category: category ? category._id : undefined,
+                    original: idea.original ? idea.original._id : null,
+                    pack: idea.pack ? idea.pack._id : null
+                })
+            }
 
-    return result.map(r => r._id)
+            results.push(result)
+
+            return true
+        }, Promise.resolve())
+
+        await Promise.all(original.filter(v => !v.processed).map(async idea => {
+            return await Idea.findByIdAndDelete(idea.value)
+        }))
+
+        return results.map(r => r._id)
+    } catch (e) {
+        console.warn(e)
+    }
 }

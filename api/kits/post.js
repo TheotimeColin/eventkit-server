@@ -1,6 +1,7 @@
 const authenticate = require('../../utils/authenticate')
 
 const slugify = require('slugify')
+const shortId = require('shortid')
 const Kit = require('../../entities/kits/kit')
 const KitVariant = require('../../entities/kits/kit-variant')
 
@@ -16,21 +17,11 @@ module.exports = async function (req, res) {
 
     try {
         let exists = req.body._id ? await Kit.findById(req.body._id) : null
-        let variants = await getVariants(exists ? exists.variants : [], req.body.variants)
 
         if (exists) {
-            kit = await exists.update({
-                ...req.body,
-                variants: variants,
-                slug: slugify(req.body.title, { lower: true, strict: true }),
-                modifiedDate: new Date()
-            })
+            kit = await updateKit(exists, { ...req.body })
         } else {
-            kit = await Kit.create({
-                ...req.body,
-                variants: variants,
-                slug: slugify(req.body.title, { lower: true, strict: true })
-            })
+            kit = await createKit({ ...req.body })
         }
     } catch (err) {
         console.warn(err)
@@ -39,12 +30,77 @@ module.exports = async function (req, res) {
 
     kit = await Kit.findById(kit._id)
         .populate('cover')
+        .populate('variants')
         .populate('thumbnail')
+        .populate({ path: 'translations', populate: { path: 'variants' } })
 
     res.send({
         kit,
         status: errors.length > 0 ? 0 : 1,
         errors
+    })
+}
+
+async function updateKit (exists, { title, subtitle, published, excerpt, content, complexity, material, time, theme, thumbnail, variants, translations }) {
+    return new Promise(async resolve => {
+        let query = {
+            title, subtitle, excerpt, content, complexity, material, time, theme, thumbnail, published,
+            modifiedDate: new Date(),
+            variants: await getVariants(exists ? exists.variants : [], variants)
+        }
+
+        if (!exists.published && published) query.publishedDate = new Date()
+
+        query.translations = await Promise.all(Object.keys(translations).map(async lang => {
+            const TRANSLATABLE = ['title', 'content', 'excerpt', 'subtitle', 'variants']
+            
+            let values = Object.keys(translations[lang]).filter(key => TRANSLATABLE.includes(key)).reduce((obj, key) => {
+                obj[key] = translations[lang][key]
+                return obj
+            }, {})
+
+            let translation = await Kit.findById(translations[lang]._id)
+            values.variants = await getVariants(translation.variants ? translation.variants : [], values.variants)
+
+            if (translation) {
+                await translation.update(values)
+            } else {
+                translation = await Kit.create({ ...values, lang })
+            }
+
+            return translation._id
+        }))
+
+        let result = await Kit.findByIdAndUpdate(exists._id, query)
+        resolve(result)
+    })
+}
+
+async function createKit ({ title, subtitle, excerpt, content, complexity, material, time, theme, thumbnail, variants, translations }) {
+    return new Promise(async resolve => {
+        let query = {
+            title, slug: slugify(title, { lower: true, strict: true }),
+            subtitle, excerpt, content, complexity, material, time, theme, thumbnail, variants
+        }
+
+        query.translations = await Promise.all(Object.keys(translations).map(async lang => {
+            if (lang != 'fr') {
+                let translation = await Kit.create({
+                    ...translations[lang],
+                    lang: lang,
+                    slug: shortId.generate()
+                })
+
+                return translation._id
+            } else {
+                return false
+            }
+        }))
+
+        query.translations = query.translations.filter(v => v)
+
+        let result = await Kit.create(query)
+        resolve(result)
     })
 }
 

@@ -6,6 +6,7 @@ const IdeaSchema = new mongoose.Schema({
     disabled: { type: Boolean, default: false },
     kickstarter: { type: Boolean, default: false },
     kit: { type: mongoose.Schema.Types.ObjectId, ref: 'Kit' },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: 'IdeaCategory' },
     tags: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'IdeaTag' }
     ]

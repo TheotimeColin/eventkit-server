@@ -27,7 +27,7 @@ module.exports = async function (req, res) {
         if (!project) throw 'error'
 
         await project
-            .populate({ path: 'ideas', populate: [{ path: 'original' }] })
+            .populate({ path: 'ideas', populate: [{ path: 'original' }, { path: 'category' }] })
             .populate('kit')
             .execPopulate()
     } catch (err) {
@@ -55,7 +55,8 @@ async function updateProject (exists, { title, description, theme, ideas, templa
         values.templateTags = templateTags
     }
 
-    values.ideas = await generateIdeas(exists.ideas, JSON.parse(ideas))
+    ideas = await generateIdeas(exists.ideas, JSON.parse(ideas))
+    values.ideas = ideas ? ideas : []
 
     if (file) {
         let fileName = 'projects/' + slugify(title, { strict: true, lower: true }).slice(0, 20) + '-' + shortid.generate() + '.zip'
