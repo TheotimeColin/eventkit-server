@@ -9,6 +9,10 @@ let ProjectSchema = new mongoose.Schema({
     ideas: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'Idea' }
     ],
+    ideaCategories: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'IdeaCategory' }
+    ],
+
     kit: { type: mongoose.Schema.Types.ObjectId, ref: 'Kit' },
 
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

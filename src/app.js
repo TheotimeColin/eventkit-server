@@ -66,6 +66,7 @@ const s3 = new AWS.S3({
 
 const storage = multer.diskStorage({
     destination : 'uploads/',
+    limits: { fieldSize: 2 * 1024 * 1024 },
     filename: function (req, file, cb) {
       cb(null, file.originalname);
     }
